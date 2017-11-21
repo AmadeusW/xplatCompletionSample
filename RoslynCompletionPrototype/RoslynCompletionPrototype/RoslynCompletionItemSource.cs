@@ -20,8 +20,8 @@ namespace RoslynCompletionPrototype
     class RoslynCompletionItemSource : IAsyncCompletionItemSource
     {
         static readonly ImmutableArray<char> CommitChars = ImmutableArray.Create<char>('.', ',', '(', ')', '[', ']');
-        static readonly ImmutableArray<char> TriggerChars = ImmutableArray.Create<char>('a', 'b', 'c', 'd', 'e', 'f'); // TODO: There is more trigger chars than non-trigger chars. Find best implementation.
-        private readonly ImageMoniker StructurePublicMoniker = new ImageMoniker { Guid = new Guid("{ae27a6b0-e345-4288-96df-5eaf394ee369}"), Id = 2996 };
+        private ImageMoniker RandomMoniker => new ImageMoniker { Guid = new Guid("{ae27a6b0-e345-4288-96df-5eaf394ee369}"), Id = 2996 + (int)(r.NextDouble()*20) };
+        readonly Random r = new Random();
 
         private CompletionService CompletionService { get; set; }
 
@@ -39,7 +39,7 @@ namespace RoslynCompletionPrototype
             if (completionList == null)
                 return default(Prototype.CompletionContext);
 
-            var items = completionList.Items.Select(roslynItem => Prototype.CompletionItem.Create(roslynItem.DisplayText, roslynItem.SortText, roslynItem.FilterText, this, roslynItem.Tags, false, false, false, roslynItem, StructurePublicMoniker));
+            var items = completionList.Items.Select(roslynItem => Prototype.CompletionItem.Create(roslynItem.DisplayText, roslynItem.SortText, roslynItem.FilterText, this, roslynItem.Tags, false, false, false, roslynItem, RandomMoniker));
             return new Prototype.CompletionContext(items, applicableSpan);
         }
 
