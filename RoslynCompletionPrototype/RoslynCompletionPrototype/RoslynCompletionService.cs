@@ -14,6 +14,7 @@ using System.Collections.Immutable;
 
 namespace RoslynCompletionPrototype
 {
+    // TODO: currently the export hierarchy doesn't work (CSharp needs to override text in a CSharp buffer). Please temporarily remove export of Microsoft.VisualStudio.Language.Intellisense.Prototype.Implementation.DefaultCompletionService until I find a way to correctly order exports
     [ExportMetadata("ContentType", "CSharp")]
     [Export(typeof(IAsyncCompletionService))]
     class RoslynCompletionService : IAsyncCompletionService
