@@ -44,6 +44,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CompletionFilters\EventFilter.cs" />
+    <Compile Include="CompletionFilters\NamespaceFilter.cs" />
+    <Compile Include="CompletionFilters\MethodFilter.cs" />
+    <Compile Include="CompletionFilters\EnumFilter.cs" />
+    <Compile Include="CompletionFilters\TypeFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoslynCompletionItemSource.cs" />
     <Compile Include="RoslynCompletionService.cs" />
@@ -103,8 +108,9 @@
       <HintPath>..\packages\Microsoft.VisualStudio.CoreUtility.15.4.27004\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Language.Intellisense.Prototype.Definition.net46">
-      <HintPath>\\scratch2\scratch\amwieczo\Completion\dlls\2017 11 14\net46\Microsoft.VisualStudio.Language.Intellisense.Prototype.Definition.net46.dll</HintPath>
+    <Reference Include="Microsoft.VisualStudio.Language.Intellisense.Prototype.Definition.net46, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>\\scratch2\scratch\amwieczo\Completion\dlls\2017 11 22\Microsoft.VisualStudio.Language.Intellisense.Prototype.Definition.net46.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.Data, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.VisualStudio.Text.Data.15.4.27004\lib\net45\Microsoft.VisualStudio.Text.Data.dll</HintPath>
