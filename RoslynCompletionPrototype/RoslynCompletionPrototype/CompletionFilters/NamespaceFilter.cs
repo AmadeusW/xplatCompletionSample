@@ -13,7 +13,7 @@ namespace RoslynCompletionPrototype.CompletionFilters
     [Export(typeof(ICompletionFilter))]
     [Name(nameof(NamespaceFilter))]
     [Order(After = nameof(EnumFilter))]
-    [ExportMetadata("ContentType", "CSharp")]
+    [ContentType("CSharp")]
     public class NamespaceFilter : ICompletionFilter
     {
         public readonly ImmutableArray<string> _tags = ImmutableArray.Create("Namespace");

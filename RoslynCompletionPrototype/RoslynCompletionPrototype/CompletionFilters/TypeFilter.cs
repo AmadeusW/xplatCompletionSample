@@ -13,7 +13,7 @@ namespace RoslynCompletionPrototype.CompletionFilters
     [Export(typeof(ICompletionFilter))]
     [Name(nameof(TypeFilter))]
     [Order(After = "default")]
-    [ExportMetadata("ContentType", "CSharp")]
+    [ContentType("CSharp")]
     public class TypeFilter : ICompletionFilter
     {
         public readonly ImmutableArray<string> _tags = ImmutableArray.Create("Class", "Struct");

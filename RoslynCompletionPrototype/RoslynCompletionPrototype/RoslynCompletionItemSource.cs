@@ -6,17 +6,19 @@ using Microsoft.VisualStudio.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Composition;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Language.Intellisense.Prototype.Definition;
 using Prototype = Microsoft.VisualStudio.Language.Intellisense.Prototype.Definition;
+using Microsoft.VisualStudio.Utilities;
 
 namespace RoslynCompletionPrototype
 {
-    [ExportMetadata("ContentType", "CSharp")]
     [Export(typeof(IAsyncCompletionItemSource))]
+    [Name("C# completion item source")]
+    [ContentType("CSharp")]
     class RoslynCompletionItemSource : IAsyncCompletionItemSource
     {
         static readonly ImmutableArray<char> CommitChars = ImmutableArray.Create<char>('.', ',', '(', ')', '[', ']');

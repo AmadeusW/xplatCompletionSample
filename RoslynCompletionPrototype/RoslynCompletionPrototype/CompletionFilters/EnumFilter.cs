@@ -13,7 +13,7 @@ namespace RoslynCompletionPrototype.CompletionFilters
     [Export(typeof(ICompletionFilter))]
     [Name(nameof(EnumFilter))]
     [Order(After = nameof(EventFilter))]
-    [ExportMetadata("ContentType", "CSharp")]
+    [ContentType("CSharp")]
     public class EnumFilter : ICompletionFilter
     {
         public readonly ImmutableArray<string> _tags = ImmutableArray.Create("Enum");

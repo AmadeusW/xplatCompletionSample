@@ -13,7 +13,7 @@ namespace RoslynCompletionPrototype.CompletionFilters
     [Export(typeof(ICompletionFilter))]
     [Name(nameof(EventFilter))]
     [Order(After = nameof(MethodFilter))]
-    [ExportMetadata("ContentType", "CSharp")]
+    [ContentType("CSharp")]
     public class EventFilter : ICompletionFilter
     {
         public readonly ImmutableArray<string> _tags = ImmutableArray.Create("Event");
