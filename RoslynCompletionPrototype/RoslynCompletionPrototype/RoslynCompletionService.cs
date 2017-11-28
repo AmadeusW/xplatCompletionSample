@@ -25,7 +25,7 @@ namespace RoslynCompletionPrototype
         async Task<Prototype.CompletionList> IAsyncCompletionService.UpdateCompletionListAsync(IEnumerable<Prototype.CompletionItem> originalList, ITextSnapshot snapshot, ITrackingSpan applicableSpan, IEnumerable<ICompletionFilter> availableFilters)
         {
             var filterText = applicableSpan.GetText(snapshot);
-            var filteredList = originalList.Where(n => n.FilterText.Contains(filterText)); // TODO: use pattern matcher
+            var filteredList = originalList.Where(n => n.FilterText.ToLower().Contains(filterText.ToLower())); // TODO: use pattern matcher
             var sortedList = filteredList.OrderBy(n => n.SortText);
             // Filtering (with filter buttons) should happen here rather than in the viewmodel, because viewmodel operates on UI thread
             // and language service may want to do something interesting when there are no available items
