@@ -41,8 +41,31 @@ namespace RoslynCompletionPrototype
             if (completionList == null)
                 return default(Prototype.CompletionContext);
 
-            var items = completionList.Items.Select(roslynItem => Prototype.CompletionItem.Create(roslynItem.DisplayText, roslynItem.SortText, roslynItem.FilterText, this, roslynItem.Tags, false, false, false, roslynItem, RandomMoniker));
+            var items = completionList.Items.Select(roslynItem => Prototype.CompletionItem.Create(roslynItem.DisplayText, roslynItem.SortText, roslynItem.FilterText, this, GetFilters(roslynItem.Tags), roslynItem.Tags, false, false, false, roslynItem, RandomMoniker));
             return new Prototype.CompletionContext(items, applicableSpan);
+        }
+
+        private ImmutableArray<CompletionFilter> GetFilters(ImmutableArray<string> tags)
+        {
+            foreach (var tag in tags)
+            {
+                switch (tag)
+                {
+                    case "Enum":
+                        return ImmutableArray.Create(CompletionFilters.EnumFilter);
+                    case "Event":
+                        return ImmutableArray.Create(CompletionFilters.EventFilter);
+                    case "Class":
+                        return ImmutableArray.Create(CompletionFilters.TypeFilter);
+                    case "Struct":
+                        return ImmutableArray.Create(CompletionFilters.TypeFilter);
+                    case "Method":
+                        return ImmutableArray.Create(CompletionFilters.MethodFilter);
+                    case "Namespace":
+                        return ImmutableArray.Create(CompletionFilters.NamespaceFilter);
+                }
+            }
+            return ImmutableArray.Create<CompletionFilter>();
         }
 
         public async Task<object> GetDescriptionAsync(Prototype.CompletionItem item)
