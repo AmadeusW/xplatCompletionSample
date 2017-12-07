@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.Language.Intellisense.Prototype.Definition;
 using Prototype = Microsoft.VisualStudio.Language.Intellisense.Prototype.Definition;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace RoslynCompletionPrototype
 {
@@ -21,9 +22,10 @@ namespace RoslynCompletionPrototype
     [ContentType("CSharp")]
     class RoslynCompletionItemSource : IAsyncCompletionItemSource
     {
-        static readonly ImmutableArray<char> CommitChars = ImmutableArray.Create<char>('.', ',', '(', ')', '[', ']');
+        static readonly ImmutableArray<string> CommitChars = ImmutableArray.Create<string>(".", ",", "(", ")", "[", "]", " ", "\t");
         private ImageMoniker RandomMoniker => new ImageMoniker { Guid = new Guid("{ae27a6b0-e345-4288-96df-5eaf394ee369}"), Id = 2996 + (int)(r.NextDouble()*20) };
         readonly Random r = new Random();
+        const string RoslynItem = nameof(RoslynItem);
 
         private CompletionService CompletionService { get; set; }
 
@@ -41,8 +43,14 @@ namespace RoslynCompletionPrototype
             if (completionList == null)
                 return default(Prototype.CompletionContext);
 
-            var items = completionList.Items.Select(roslynItem => Prototype.CompletionItem.Create(roslynItem.DisplayText, roslynItem.SortText, roslynItem.FilterText, this, GetFilters(roslynItem.Tags), roslynItem.Tags, false, false, false, roslynItem, RandomMoniker));
-            return new Prototype.CompletionContext(items, applicableSpan);
+            var items = completionList.Items.Select(roslynItem =>
+            {
+                var item = Prototype.CompletionItem.Create(roslynItem.DisplayText, roslynItem.SortText, roslynItem.FilterText, this, GetFilters(roslynItem.Tags), false, false, false, RandomMoniker);
+                item.Properties.AddProperty(RoslynItem, roslynItem);
+                return item;
+            });
+            var availableFilters = items.SelectMany(n => n.Filters).Distinct().ToImmutableArray();
+            return new Prototype.CompletionContext(items, applicableSpan, availableFilters);
         }
 
         private ImmutableArray<CompletionFilter> GetFilters(ImmutableArray<string> tags)
@@ -73,32 +81,37 @@ namespace RoslynCompletionPrototype
             return item.DisplayText;
         }
 
-        public async Task CustomCommit(ITextBuffer buffer, Prototype.CompletionItem item, ITrackingSpan applicableSpan, char? commitCharacter)
+        public void CustomCommit(ITextView view, ITextBuffer buffer, Prototype.CompletionItem item, ITrackingSpan applicableSpan, string textEdit)
         {
             InitializeCompletionService(buffer);
 
-            // HACK ALERT: We're sneaking the Roslyn CompletionItem as item.SortData. Updated Roslyn provider should consume our CompletionItem
-            var roslynItem = item.Hack as Microsoft.CodeAnalysis.Completion.CompletionItem;
+            var roslynItem = item.Properties.GetProperty<Microsoft.CodeAnalysis.Completion.CompletionItem>(RoslynItem); // We're using custom data we deposited in GetCompletionContextAsync
             var document = buffer.GetRelatedDocuments().First();
-            var roslynChange = await CompletionService.GetChangeAsync(document, roslynItem, commitCharacter);
+            char? commitCharacter = String.IsNullOrEmpty(textEdit) ? null : new char?(textEdit[0]);
+            var roslynChange = CompletionService.GetChangeAsync(document, roslynItem, commitCharacter).Result;
 
             var edit = buffer.CreateEdit();
             edit.Replace(new Span(roslynChange.TextChange.Span.Start, roslynChange.TextChange.Span.Length), roslynChange.TextChange.NewText);
             edit.Apply();
         }
 
-        public ImmutableArray<char> GetPotentialCommitCharacters()
+        public ImmutableArray<string> GetPotentialCommitCharacters()
         {
             return CommitChars;
         }
 
-        public bool ShouldCommitCompletion(char typedChar, SnapshotPoint location)
+        public bool ShouldCommitCompletion(string typedChar, SnapshotPoint location)
         {
             return CommitChars.Contains(typedChar);
         }
 
-        public bool ShouldTriggerCompletion(char ch, SnapshotPoint location)
+        public bool ShouldTriggerCompletion(string edit, SnapshotPoint location)
         {
+            if (String.IsNullOrEmpty(edit)) return false;
+
+            // We support only characters
+            char ch = edit[0];
+
             // identifier-start-character:
             //   letter-character
             //   _ (the underscore character U+005F)
