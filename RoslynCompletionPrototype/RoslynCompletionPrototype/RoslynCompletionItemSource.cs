@@ -45,12 +45,12 @@ namespace RoslynCompletionPrototype
 
             var items = completionList.Items.Select(roslynItem =>
             {
-                var item = Prototype.CompletionItem.Create(roslynItem.DisplayText, roslynItem.SortText, roslynItem.FilterText, this, GetFilters(roslynItem.Tags), false, false, false, RandomMoniker);
+                var item = Prototype.CompletionItem.Create(roslynItem.DisplayText, roslynItem.SortText, roslynItem.FilterText, this, GetFilters(roslynItem.Tags), false, RandomMoniker);
                 item.Properties.AddProperty(RoslynItem, roslynItem);
                 return item;
             });
             var availableFilters = items.SelectMany(n => n.Filters).Distinct().ToImmutableArray();
-            return new Prototype.CompletionContext(items, applicableSpan, availableFilters);
+            return new Prototype.CompletionContext(items, applicableSpan, availableFilters, false, false);
         }
 
         private ImmutableArray<CompletionFilter> GetFilters(ImmutableArray<string> tags)
